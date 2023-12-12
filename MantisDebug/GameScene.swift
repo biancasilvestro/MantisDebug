@@ -5,18 +5,122 @@ import GameplayKit
 class GameScene: SKScene {
     
     //MARK: - Properties
+    var gameOverOverlay : GameOverOverlay!
+    
+    
     var popupTime: Double = 0.9 // Tempo di intervallo per la comparsa degli oggetti
     var isNextSequenceQueued = true // per controllare la sequenza degli oggetti
     var sequenceType: [SequenceType] = [] // Tipo di sequenza di oggetti
     var sequencePos = 0 // Posizione nella sequenza
     var delay = 3.0 // Ritardo per la generazione degli oggetti successivi
     var activeSprites: [SKNode] = [] // Array contenente gli oggetti attivi nella scena
+    var activeSliceBG: SKShapeNode!
+    var activeSliceFG: SKShapeNode!
+    var activeSlicePoints: [CGPoint] = []
     
+    var scoreLbl: SKLabelNode!
+    var score: Int = 0{
+        willSet{
+            scoreLbl.text = "\(newValue)"
+            scoreLbl.run(.sequence([
+                .scale(to: 1.5, duration: 0.1),
+                .scale(to:1.0, duration: 0.1)
+            
+            ]))
+        }
+    }
+    
+    var livesNodes :[SKSpriteNode] = []
+    var lives = 3
+    var isGameEnded = true
+    var isReload = true
     
     //MARK: - Lifecycle (Ciclo di vita)
     override func didMove(to view: SKView) { //SKview è la view che presenta i nodi, è inizializzazione di tutti gli elementi
         setupNodes() // Metodo per configurare i nodi nella scena
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        activeSlicePoints.removeAll(keepingCapacity: true)
+        
+        for _ in touches{
+            guard let touch = touches.first else { return }
+            let location = touch.location(in: self)
+            
+            
+            activeSlicePoints.append(location)
+            redrawActiveSlice()
+            
+            activeSliceFG.removeAllActions()
+            activeSliceBG.removeAllActions()
+            activeSliceFG.alpha = 1.0
+            activeSliceBG.alpha = 1.0
+            
+        }
+        
+        
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        
+        activeSliceBG.run(.fadeAlpha(to: 0.0, duration: 0.25))
+        activeSliceFG.run(.fadeAlpha(to: 0.0, duration: 0.25))
+        
+        
+    }
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
+        if isGameEnded {return}
+        
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        
+        activeSlicePoints.append(location)
+        redrawActiveSlice()
+        
+        let nodesAtLocation = nodes(at: location)
+        
+        for node in nodesAtLocation {
+            if node.name == "Fruit" {
+                handleFruitTouched(node)
+            } else if node.name == "Bomb" {
+                handleBombTouched(node)
+            }
+        }
+    }
+
+    func handleFruitTouched(_ node: SKNode) {
+        createEmitter("SliceHitFruit", pos: node.position, node: self)
+        node.name = nil
+        node.parent!.physicsBody?.isDynamic = false
+        
+        let scaleOut = SKAction.scale(to: 0.001, duration: 0.2)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.2)
+        let groupAct = SKAction.group([scaleOut, fadeOut])
+        let sequence = SKAction.sequence([groupAct, .removeFromParent()])
+        node.run(sequence)
+        
+        score += 1
+        removeSprite(node, nodes: &activeSprites)
+    }
+
+    func handleBombTouched(_ node: SKNode) {
+        createEmitter("SliceHitBomb", pos: node.parent!.position, node: self)
+        node.name = nil
+        node.physicsBody?.isDynamic = false
+        
+        let scaleOut = SKAction.scale(to: 0.001, duration: 0.2)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.2)
+        let groupAct = SKAction.group([scaleOut, fadeOut])
+        let sequence = SKAction.sequence([groupAct, .removeFromParent()])
+        node.parent!.run(sequence)
+        
+        removeSprite(node.parent!, nodes: &activeSprites)
+        setUpGameOver(true)
+    }
+
     
     
     //funzione per verificare se gli oggetti sono fuori visuale cosi li rimuoviamo
@@ -36,6 +140,7 @@ class GameScene: SKScene {
                         $0.removeFromParent() //rimuove il nodo dalla scena
                         removeSprite($0, nodes: &activeSprites) //rimuove il nodo dall'array
                     } else if $0.name == "Fruit" {
+                        subtracklife()
                         $0.name = nil
                         $0.removeFromParent()
                         removeSprite($0, nodes: &activeSprites)
@@ -61,9 +166,16 @@ extension GameScene {
         createBG() // Creazione dello sfondo
         setupPhysics() // Configurazione della fisica della scena
         setupSequenceType() // Configurazione dei tipi di sequenza di oggetti
+        createLives()
+        createSlice()
+        createScore()
+        setupOverlays()
         
-        
-        tossHandler() // Metodo per gestire la generazione degli oggetti
+        guard !isGameEnded else {return}
+        run(.wait(forDuration: 1.5)) {
+            self.tossHandler()// Metodo per gestire la generazione degli oggetti
+        }
+    
     }
     
     // Metodo per configurare la fisica della scena
@@ -71,6 +183,23 @@ extension GameScene {
         physicsWorld.gravity = CGVector(dx: 0.0, dy: -6.0)
         physicsWorld.speed = 0.85
     }
+    
+    
+    
+    func setupOverlays(){
+        gameOverOverlay = GameOverOverlay(gameScene: self, size:size)
+        gameOverOverlay.zPosition = 999999
+        addChild(gameOverOverlay)
+        
+        
+        guard isReload else{
+            return
+        }
+        gameOverOverlay.setups(true)
+        gameOverOverlay.showPlay()
+    }
+    
+    
 }
 
 //MARK: -Background (Sfondo)
@@ -88,6 +217,8 @@ extension GameScene {
 //MARK: -mantis/fruit
 extension GameScene{
     func tossHandler(){
+        if isGameEnded {return}
+        
         // Metodo per gestire la generazione degli oggetti
         popupTime *= 0.991
         delay *= 0.99 // cosi ogni volta che avvia la funzione, diventa sempre piu veloce il gioco
@@ -231,3 +362,186 @@ extension GameScene{
     
 }
 
+//MARK: -Sequence Type
+extension GameScene{
+    func createSlice() {
+        
+        activeSliceBG = SKShapeNode()
+        activeSliceBG.zPosition = 2.0
+        activeSliceBG.lineWidth = 9.0
+        activeSliceBG.strokeColor = UIColor (red: 1.0, green: 0.9, blue: 0.0, alpha: 1.0)
+        
+        activeSliceFG = SKShapeNode()
+        activeSliceFG.zPosition = 2.0
+        activeSliceFG.lineWidth = 5.0
+        activeSliceFG.strokeColor = .white
+        
+        addChild(activeSliceBG)
+        addChild(activeSliceFG)
+        }
+    
+    
+    func redrawActiveSlice() {
+        if activeSlicePoints.count < 2 {
+            activeSliceBG.path = nil
+            activeSliceFG.path = nil
+            return
+        }
+        while activeSlicePoints.count > 12 {
+            activeSlicePoints.remove (at: 0)
+        }
+        let bezierPath = UIBezierPath()
+        bezierPath.move(to: activeSlicePoints[0])
+        
+        
+        for i in 0..<activeSlicePoints.count {
+            bezierPath.addLine(to: activeSlicePoints[i])
+        }
+        activeSliceBG.path = bezierPath.cgPath
+        activeSliceFG.path = bezierPath.cgPath
+        
+    }
+
+    
+}
+
+
+//MARK: -Score
+extension GameScene {
+    func createScore() {
+        let width: CGFloat = 150.0
+        let height: CGFloat = 50.0
+        
+        let shapeRect = CGRect(x: frame.midX - width / 2, y: frame.maxY - height - 20.0, width: width, height: height)
+        let shape = SKShapeNode(rect: shapeRect, cornerRadius: 8.0)
+        shape.strokeColor = .clear
+        shape.fillColor = UIColor.black.withAlphaComponent(0.5)
+        shape.zPosition = 5.0
+        addChild(shape)
+        
+        scoreLbl = SKLabelNode(fontNamed: "HelveticaNeue-Bold")
+        scoreLbl.text = "0"
+        scoreLbl.zPosition = 5.0
+        scoreLbl.fontSize = 40.0
+        scoreLbl.verticalAlignmentMode = .center
+        scoreLbl.horizontalAlignmentMode = .center
+        scoreLbl.position = CGPoint(x: frame.midX, y: frame.maxY - height  + scoreLbl.fontSize * 0.2)
+        addChild(scoreLbl)
+    }
+}
+
+
+
+
+extension GameScene {
+    func createLives() {
+        let containerNode = SKNode()
+        
+        var totalWidth: CGFloat = 0.0
+        
+        for _ in 0..<3 {
+            let sprite = SKSpriteNode(imageNamed: "sliceLife")
+            sprite.setScale(0.9)
+            let spriteW = sprite.frame.width * sprite.xScale // Larghezza effettiva dell'immagine
+            let spriteH = sprite.frame.height * sprite.yScale // Altezza effettiva dell'immagine
+            
+            sprite.position = CGPoint(x: totalWidth, y: 0)
+            totalWidth += spriteW
+            
+            containerNode.addChild(sprite)
+            livesNodes.append(sprite)
+        }
+        
+        containerNode.position = CGPoint(x: 40, y: frame.maxY - 50) // Posizione del contenitore
+        addChild(containerNode)
+    }
+    
+    
+
+    func subtracklife() {
+            lives -= 1
+            
+            if lives >= 0 && lives < livesNodes.count {
+                let sprite = livesNodes[lives]
+                sprite.texture = SKTexture(imageNamed: "sliceLifeGone")
+                sprite.xScale = 1.3 * 1.0
+                sprite.yScale = 1.3 * 1.0
+                sprite.run(.scale(to: 1.0, duration: 0.1))
+                
+                if lives == 0 {
+                    setUpGameOver(true) // Imposta il Game Over se il numero di vite è zero
+                } else {
+                    checkLivesState() // Altrimenti, controlla lo stato delle vite
+                }
+            }
+        }
+}
+
+// MARK game over
+extension GameScene{
+    func setUpGameOver(_ isGameOver: Bool){
+        gameOverOverlay.setups(score:score)
+        gameOverOverlay.showGameOver("GAME OVER")
+        
+        if isGameEnded {return}
+        isGameEnded = true
+        physicsWorld.speed = 0.0
+        isUserInteractionEnabled = false
+        
+        if isGameOver{
+            let texture = SKTexture(imageNamed: "sliceLifeGone")
+            livesNodes[0].texture = texture
+            livesNodes[1].texture = texture
+            livesNodes[2].texture = texture
+        }
+        
+    }
+
+    
+    
+    func presentScene(){
+        
+        let scene = GameScene(size: size)
+        scene.scaleMode = scaleMode
+        scene.isReload = false
+        scene.isGameEnded = false
+        view!.presentScene(scene, transition: .fade(withDuration: 1.0))
+        
+        
+        
+        
+        
+    }
+    
+    
+    
+func checkLivesState() {
+        var allLivesGone = true
+        
+        for node in livesNodes {
+            if node.texture != SKTexture(imageNamed: "sliceLifeGone") {
+                allLivesGone = false
+                break
+            }
+        }
+        
+        if allLivesGone {
+            setUpGameOver(true) // Se tutte le vite sono gone, imposta il Game Over a true
+        }
+    }
+}
+
+
+
+
+// MARK emitter
+extension GameScene{
+    func createEmitter (_ fn: String, pos: CGPoint, node : SKNode){
+        let emitter = SKEmitterNode(fileNamed: fn)!
+        emitter.position = pos
+        node.addChild(emitter)
+        
+    }
+    
+    
+}

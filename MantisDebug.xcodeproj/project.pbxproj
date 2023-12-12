@@ -17,6 +17,11 @@
 		421042AB2B278E57001317B2 /* Int+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421042AA2B278E57001317B2 /* Int+Ext.swift */; };
 		421042AD2B27909A001317B2 /* CGFloat+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421042AC2B27909A001317B2 /* CGFloat+Ext.swift */; };
 		421042AF2B279659001317B2 /* EnumsType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421042AE2B279659001317B2 /* EnumsType.swift */; };
+		42918C0D2B28C384006F111D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42918C0B2B28C384006F111D /* Assets.xcassets */; };
+		42918C0F2B28C3A6006F111D /* SliceHitFruit.sks in Resources */ = {isa = PBXBuildFile; fileRef = 42918C0E2B28C3A6006F111D /* SliceHitFruit.sks */; };
+		42918C132B28DE3A006F111D /* SliceHitBomb.sks in Resources */ = {isa = PBXBuildFile; fileRef = 42918C122B28DE3A006F111D /* SliceHitBomb.sks */; };
+		42918C162B28E432006F111D /* BaseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42918C152B28E432006F111D /* BaseOverlay.swift */; };
+		42918C182B28E8AB006F111D /* GameOverOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42918C172B28E8AB006F111D /* GameOverOverlay.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +36,11 @@
 		421042AA2B278E57001317B2 /* Int+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+Ext.swift"; sourceTree = "<group>"; };
 		421042AC2B27909A001317B2 /* CGFloat+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Ext.swift"; sourceTree = "<group>"; };
 		421042AE2B279659001317B2 /* EnumsType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumsType.swift; sourceTree = "<group>"; };
+		42918C0B2B28C384006F111D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		42918C0E2B28C3A6006F111D /* SliceHitFruit.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SliceHitFruit.sks; sourceTree = "<group>"; };
+		42918C122B28DE3A006F111D /* SliceHitBomb.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SliceHitBomb.sks; sourceTree = "<group>"; };
+		42918C152B28E432006F111D /* BaseOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseOverlay.swift; sourceTree = "<group>"; };
+		42918C172B28E8AB006F111D /* GameOverOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverOverlay.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +57,9 @@
 		421042842B2769DD001317B2 = {
 			isa = PBXGroup;
 			children = (
+				42918C0E2B28C3A6006F111D /* SliceHitFruit.sks */,
+				42918C122B28DE3A006F111D /* SliceHitBomb.sks */,
+				42918C0B2B28C384006F111D /* Assets.xcassets */,
 				421042AC2B27909A001317B2 /* CGFloat+Ext.swift */,
 				421042AE2B279659001317B2 /* EnumsType.swift */,
 				421042AA2B278E57001317B2 /* Int+Ext.swift */,
@@ -67,6 +80,7 @@
 		4210428F2B2769DD001317B2 /* MantisDebug */ = {
 			isa = PBXGroup;
 			children = (
+				42918C142B28E3A7006F111D /* overlays */,
 				421042902B2769DD001317B2 /* AppDelegate.swift */,
 				421042962B2769DD001317B2 /* GameScene.swift */,
 				421042982B2769DD001317B2 /* GameViewController.swift */,
@@ -83,6 +97,15 @@
 				4210429D2B2769DE001317B2 /* Assets.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		42918C142B28E3A7006F111D /* overlays */ = {
+			isa = PBXGroup;
+			children = (
+				42918C152B28E432006F111D /* BaseOverlay.swift */,
+				42918C172B28E8AB006F111D /* GameOverOverlay.swift */,
+			);
+			path = overlays;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -145,7 +168,10 @@
 			files = (
 				4210429C2B2769DD001317B2 /* Main.storyboard in Resources */,
 				4210429E2B2769DE001317B2 /* Assets.xcassets in Resources */,
+				42918C132B28DE3A006F111D /* SliceHitBomb.sks in Resources */,
 				421042A12B2769DE001317B2 /* LaunchScreen.storyboard in Resources */,
+				42918C0F2B28C3A6006F111D /* SliceHitFruit.sks in Resources */,
+				42918C0D2B28C384006F111D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,10 +183,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				421042AD2B27909A001317B2 /* CGFloat+Ext.swift in Sources */,
+				42918C162B28E432006F111D /* BaseOverlay.swift in Sources */,
 				421042AF2B279659001317B2 /* EnumsType.swift in Sources */,
 				421042AB2B278E57001317B2 /* Int+Ext.swift in Sources */,
 				421042972B2769DD001317B2 /* GameScene.swift in Sources */,
 				421042992B2769DD001317B2 /* GameViewController.swift in Sources */,
+				42918C182B28E8AB006F111D /* GameOverOverlay.swift in Sources */,
 				421042912B2769DD001317B2 /* AppDelegate.swift in Sources */,
 				421042A92B27719F001317B2 /* types.swift in Sources */,
 			);
