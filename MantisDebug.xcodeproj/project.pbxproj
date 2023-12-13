@@ -22,8 +22,8 @@
 		42918C132B28DE3A006F111D /* SliceHitBomb.sks in Resources */ = {isa = PBXBuildFile; fileRef = 42918C122B28DE3A006F111D /* SliceHitBomb.sks */; };
 		42918C162B28E432006F111D /* BaseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42918C152B28E432006F111D /* BaseOverlay.swift */; };
 		42918C182B28E8AB006F111D /* GameOverOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42918C172B28E8AB006F111D /* GameOverOverlay.swift */; };
-		42D1AF122B29D6F5001A7BE9 /* smashsound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 42D1AF112B29D6F5001A7BE9 /* smashsound.wav */; };
 		42D1AF142B29DACB001A7BE9 /* birdsound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 42D1AF132B29DACB001A7BE9 /* birdsound.wav */; };
+		A0CBEB4D2B29F96F0056312C /* smashsound.wav in Resources */ = {isa = PBXBuildFile; fileRef = A0CBEB4C2B29F96F0056312C /* smashsound.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,8 +43,8 @@
 		42918C122B28DE3A006F111D /* SliceHitBomb.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = SliceHitBomb.sks; sourceTree = "<group>"; };
 		42918C152B28E432006F111D /* BaseOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseOverlay.swift; sourceTree = "<group>"; };
 		42918C172B28E8AB006F111D /* GameOverOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverOverlay.swift; sourceTree = "<group>"; };
-		42D1AF112B29D6F5001A7BE9 /* smashsound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = smashsound.wav; path = "../../../../Music/Music/Media.localized/Music/Unknown Artist/Unknown Album/smashsound.wav"; sourceTree = "<group>"; };
 		42D1AF132B29DACB001A7BE9 /* birdsound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = birdsound.wav; sourceTree = "<group>"; };
+		A0CBEB4C2B29F96F0056312C /* smashsound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = smashsound.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,7 +99,7 @@
 			isa = PBXGroup;
 			children = (
 				4210429D2B2769DE001317B2 /* Assets.xcassets */,
-				42D1AF112B29D6F5001A7BE9 /* smashsound.wav */,
+				A0CBEB4C2B29F96F0056312C /* smashsound.wav */,
 				42D1AF132B29DACB001A7BE9 /* birdsound.wav */,
 			);
 			path = Resources;
@@ -177,9 +177,9 @@
 				42D1AF142B29DACB001A7BE9 /* birdsound.wav in Resources */,
 				42918C132B28DE3A006F111D /* SliceHitBomb.sks in Resources */,
 				421042A12B2769DE001317B2 /* LaunchScreen.storyboard in Resources */,
-				42D1AF122B29D6F5001A7BE9 /* smashsound.wav in Resources */,
 				42918C0F2B28C3A6006F111D /* SliceHitFruit.sks in Resources */,
 				42918C0D2B28C384006F111D /* Assets.xcassets in Resources */,
+				A0CBEB4D2B29F96F0056312C /* smashsound.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -38,9 +38,18 @@ class GameScene: SKScene {
     var isGameEnded = true
     var isReload = true
     
+    // defaults permette di ottenere le configurazioni standard dell'utente
+    // configurazioni --> qualunque oggetto creato, da una struct semplice a una variabile.
+    let defaults = UserDefaults.standard
+    
     //MARK: - Lifecycle (Ciclo di vita)
     override func didMove(to view: SKView) { //SKview è la view che presenta i nodi, è inizializzazione di tutti gli elementi
         setupNodes() // Metodo per configurare i nodi nella scena
+        
+        // Alla prima apertura, se l'highScore non esiste lo inizializzo a 0
+        if defaults.value(forKey: "highScore") == nil {
+            defaults.setValue(0, forKey: "highScore")
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -494,7 +503,12 @@ extension GameScene {
 // MARK game over
 extension GameScene{
     func setUpGameOver(_ isGameOver: Bool){
-        gameOverOverlay.setups(score:score)
+        
+        // Ogni volta che il gioco termina, salvo il nuovo punteggio più alto come highScore
+        if score > defaults.value(forKey: "highScore") as! Int {
+            defaults.setValue(score, forKey: "highScore")
+        }
+        gameOverOverlay.setups(score:defaults.value(forKey: "highScore") as! Int)
         gameOverOverlay.showGameOver("GAME OVER")
         
         if isGameEnded {return}
