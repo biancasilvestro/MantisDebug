@@ -175,7 +175,7 @@ extension GameOverOverlay {
     
     private func createLbl(_ pos: CGPoint, hori: SKLabelHorizontalAlignmentMode, verti:
                            SKLabelVerticalAlignmentMode, txt: String, fontC: UIColor = .white, fontS: CGFloat = 45.0) -> SKLabelNode {
-        let lbl = SKLabelNode(fontNamed: "HelveticaNeue-Bold")
+        let lbl = SKLabelNode(fontNamed: "San Francisco")
         lbl.fontColor = fontC
         lbl.fontSize = fontS
         lbl.text = txt

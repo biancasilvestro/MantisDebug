@@ -6,6 +6,9 @@ class GameScene: SKScene {
     
     //MARK: - Properties
     var gameOverOverlay : GameOverOverlay!
+    let soundAction = SKAction.playSoundFileNamed("smashsound.wav", waitForCompletion: false)
+    let birdAction = SKAction.playSoundFileNamed("birdsound.wav", waitForCompletion: false)
+
     
     
     var popupTime: Double = 0.9 // Tempo di intervallo per la comparsa degli oggetti
@@ -104,6 +107,7 @@ class GameScene: SKScene {
         
         score += 1
         removeSprite(node, nodes: &activeSprites)
+        run(soundAction)
     }
 
     func handleBombTouched(_ node: SKNode) {
@@ -119,6 +123,7 @@ class GameScene: SKScene {
         
         removeSprite(node.parent!, nodes: &activeSprites)
         setUpGameOver(true)
+        run(birdAction)
     }
 
     
@@ -237,23 +242,26 @@ extension GameScene{
             createSprite(.Always)// Crea un oggetto con bomba
         case .Two:
             createSprite()
+            createSprite()
             createSprite()// Crea un oggetto random
         case .Three:
             createSprite()
-            createSprite()
+            createSprite(.Always)
             createSprite()
         case .Four:
+            createSprite(.Always)
             createSprite()
-            createSprite()
+            createSprite(.Always)
         case .Five:
             createSprite()
-            run(.wait(forDuration: delay/5)){self.createSprite()}
+            run(.wait(forDuration: delay/5)){self.createSprite(.Always)}
             run(.wait(forDuration: delay/5*2)){self.createSprite()}
+            run(.wait(forDuration: delay/5)){self.createSprite()}
             run(.wait(forDuration: delay/5*3)){self.createSprite()}
         case .Six:
             createSprite()
             run(.wait(forDuration: delay/10)){self.createSprite()}
-            run(.wait(forDuration: delay/10)){self.createSprite()}
+            run(.wait(forDuration: delay/10)){self.createSprite(.Always)}
             run(.wait(forDuration: delay/10*2)){self.createSprite()}
         }
         
@@ -265,34 +273,40 @@ extension GameScene{
     
     
     func createSprite(_ forceBomb: ForceBomb = .Defaults) {
-        var sprite = SKSpriteNode() // A SpriteNode is a node that displays a Sprite.As it is a Node it can be transformed, be included as a child in another node and have child nodes of its own. A Sprite is a textured 2D node
-        
-        // Randomly determine if the object is a bomb or a fruit based on forceBomb parameter
-        var bombType = Int.random(min: 1, max: 6)
-        if forceBomb == .Never {
-            bombType = 1 // Force to create a fruit
-        } else if forceBomb == .Always {
-            bombType = 0 // Force to create a bomb
-        }
-        
-        // Check the determined bombType to decide whether to create a bomb or a fruit
-        if bombType == 0 {
-            // Create a bomb
-            sprite = SKSpriteNode()
-            sprite.zPosition = 1.0
-            sprite.setScale(1.0)
-            sprite.name = "BombContainer"
+        var sprite = SKSpriteNode()
+            var imageName = ""
             
-            let bomb = SKSpriteNode(imageNamed: "bomb_1")
-            bomb.name = "Bomb"
-            sprite.addChild(bomb)
-        } else {
-            // Create a fruit
-            sprite = SKSpriteNode(imageNamed: "fruit_2")
-            sprite.setScale(1)
-            sprite.name = "Fruit"
-        }
-        
+            // Definisci un numero massimo di immagini di frutta disponibili
+            let maxFruitImages = 4
+            
+            // Randomly determine if the object is a bomb or a fruit based on forceBomb parameter
+            var bombType = Int.random(in: 1...9)
+            if forceBomb == .Never {
+                bombType = 1 // Forza la creazione di un frutto
+            } else if forceBomb == .Always {
+                bombType = 0 // Forza la creazione di una bomba
+            }
+            
+            // Decide se creare una bomba o un frutto in base a bombType
+            if bombType == 0 {
+                // Create a bomb
+                sprite = SKSpriteNode()
+                sprite.zPosition = 1.0
+                sprite.setScale(1.0)
+                sprite.name = "BombContainer"
+                
+                let bomb = SKSpriteNode(imageNamed: "bomb_1")
+                bomb.name = "Bomb"
+                sprite.addChild(bomb)
+            } else {
+                // Randomly choose a fruit image
+                let randomFruitIndex = Int.random(in: 1...maxFruitImages)
+                imageName = "fruit_\(randomFruitIndex)"
+                sprite = SKSpriteNode(imageNamed: imageName)
+                sprite.size = CGSize(width: 100, height: 100)
+                sprite.setScale(1.3)
+                sprite.name = "Fruit"
+            }
         // Calculate minimum and maximum X positions to place the object within the scene bounds
         let spriteW = sprite.frame.width
         let minXPosition = frame.minX + spriteW // Minimum X position, increased to move objects more to the left
@@ -368,12 +382,12 @@ extension GameScene{
         
         activeSliceBG = SKShapeNode()
         activeSliceBG.zPosition = 2.0
-        activeSliceBG.lineWidth = 9.0
-        activeSliceBG.strokeColor = UIColor (red: 1.0, green: 0.9, blue: 0.0, alpha: 1.0)
+        activeSliceBG.lineWidth = 6.0
+        activeSliceBG.strokeColor = .green
         
         activeSliceFG = SKShapeNode()
         activeSliceFG.zPosition = 2.0
-        activeSliceFG.lineWidth = 5.0
+        activeSliceFG.lineWidth = 3.0
         activeSliceFG.strokeColor = .white
         
         addChild(activeSliceBG)
