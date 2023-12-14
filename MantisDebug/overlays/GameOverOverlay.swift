@@ -105,7 +105,7 @@ class GameOverOverlay: BaseOverlay {
     }
 }
 extension GameOverOverlay {
-    func setups(_ isPlay: Bool = false, score: Int = 0) {
+    func setups(_ isPlay: Bool = false, highScore: Int = 0, actualScore: Int = 0) {
         isUserInteractionEnabled = true
         guard let viewBounds = gameScene.view?.bounds else { return }
         let viewWidth = viewBounds.width
@@ -150,13 +150,19 @@ extension GameOverOverlay {
             let continueLabelPos = CGPoint(x: continueNode.frame.midX, y: continueNode.frame.midY)
             continueLbl = createLbl(continueLabelPos, hori: .center, verti: .center, txt: "Continue", fontS: 40.0)
             continueLbl.name = GOOverlaySettings.ContinueLbl
-            let scoreLabel = SKLabelNode(fontNamed: "HelveticaNeue-Bold")
-               scoreLabel.text = "SCORE: \(score)"
-               scoreLabel.fontSize = 30.0
-               scoreLabel.position = CGPoint(x: viewBounds.midX, y: continueNode.frame.minY - 90) // Imposta la posizione verticale sotto il pulsante "Continue"
-               scoreLabel.zPosition = 5 // Imposta la Z-position per assicurarti che sia visualizzato sopra altri nodi
-               addChild(scoreLabel)
+            let highScoreLab = SKLabelNode(fontNamed: "HelveticaNeue-Bold")
+               highScoreLab.text = "HIGHEST SCORE: \(highScore)"
+               highScoreLab.fontSize = 30.0
+               highScoreLab.position = CGPoint(x: viewWidth - 200, y: continueNode.frame.minY - 90) // Imposta la posizione verticale sotto il pulsante "Continue"
+               highScoreLab.zPosition = 5 // Imposta la Z-position per assicurarti che sia visualizzato sopra altri nodi
+               addChild(highScoreLab)
             
+            let actualScoreLab = SKLabelNode(fontNamed: "HelveticaNeue-Bold")
+                actualScoreLab.text = "YOUR SCORE: \(actualScore)"
+                actualScoreLab.fontSize = 30.0
+                actualScoreLab.position = CGPoint(x: 200, y: continueNode.frame.minY - 90)
+                actualScoreLab.zPosition = 5
+                addChild(actualScoreLab)
         }
     }
     

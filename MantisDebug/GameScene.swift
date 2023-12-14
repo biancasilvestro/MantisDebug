@@ -508,7 +508,7 @@ extension GameScene{
         if score > defaults.value(forKey: "highScore") as! Int {
             defaults.setValue(score, forKey: "highScore")
         }
-        gameOverOverlay.setups(score:defaults.value(forKey: "highScore") as! Int)
+        gameOverOverlay.setups(highScore:defaults.value(forKey: "highScore") as! Int, actualScore: score)
         gameOverOverlay.showGameOver("GAME OVER")
         
         if isGameEnded {return}
